@@ -27,5 +27,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "axios": "^0.18.0",
+    "eslint-plugin-react-hooks": "^1.6.0",
+    "react-router": "^5.0.0",
+    "react-router-dom": "^5.0.0",
+    "styled-components": "^4.2.0"
   }
 }
