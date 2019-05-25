@@ -1,12 +1,14 @@
 import React from 'react';
 import './App.css';
 import Routes from './routes'
+import Menu from './Components/Menu'
 
 function App() {
   return (
-    <h1>
+    <div>  
+      <Menu/> 
       <Routes/>
-    </h1>
+    </div>
   );
 }
 

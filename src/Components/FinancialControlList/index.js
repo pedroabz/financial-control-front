@@ -1,79 +1,68 @@
 import React, {useState, useEffect} from 'react'
 import axios from 'axios'
-import styled from 'styled-components'
+import ExpensesTable from '../ExpensesTable'
+import PickList from '../PickList'
+import {Container, SearchContainer} from './styles'
 
 
 export default function FinancialControlList () 
 {  
     const [expenseList, setExpenseList] = useState([]);
+    const [filteredExpenseList, setFilteredExpenseList] = useState([]);
+    const [searchText, setSearchState] = useState("")
+    const [searchKind, setSearchKind] = useState("Description")
 
-    const DivContainer = styled.div`
-        padding: 0px 20%
-    `
-    const TableColumn = styled.th`
-        border: 1px solid #dddddd;
-        text-align: left;
-        padding: 8px;
-    `
-
-    const TableColumnRow = styled.td`
-        border: 1px solid #dddddd;
-        text-align: left;
-        padding: 8px;
-        font-size:25px
-    `
-    const TableEvenRow = styled.tr`
-         background-color: #dddddd;
-    `   
-
-    const StyledTable = styled.table`
-        font-family: arial, sans-serif;
-        border: 1px solid black;
-        width: 100%;
-    `
     useEffect(() =>{
         getExpenses()
     }, [])
+
+    useEffect(() => {
+        if(expenseList.length)
+        {
+            searchText ?             
+                ( 
+                setFilteredExpenseList(expenseList.filter(i => i.description.includes(searchText)).length ? 
+                    expenseList.filter(i => i.description.includes(searchText)) :
+                    []
+                )  
+                )
+                :
+                setFilteredExpenseList(expenseList)
+        }
+    }, [searchText, expenseList])
     const getExpenses = ()=> {
         axios.get('http://localhost:3500/expenses')
             .then((response) => {                
-                setExpenseList(response.data)
+                setExpenseList(response.data)                
             })
     }
+
+
+    const handleSearch = (value) => {
+        setSearchState(value)        
+    }
+
+    const options = [{
+        value:"Description",
+        label:"Description"
+    },
+    {
+        value:"Value",
+        label:"Value"
+    }
+    ]
+
     return( 
-        <DivContainer>
-            <h1>Expenses </h1>
-            <StyledTable>
-                <thead>
-                    <tr>
-                        <TableColumn>Description</TableColumn>
-                        <TableColumn>Value</TableColumn> 
-                        <TableColumn>Month</TableColumn>
-                    </tr>
-                </thead>
-                <tbody>               
-                    {
-                        expenseList.map((val, index) => 
-                            index % 2 == 0 ?
-                               (
-                                <tr key={index}>
-                                    <TableColumnRow>{val.description}</TableColumnRow>  
-                                    <TableColumnRow>{val.value}</TableColumnRow>  
-                                    <TableColumnRow>{val.month}</TableColumnRow>
-                                </tr>
-                               ):
-                               (
-                                <TableEvenRow key={index}>
-                                    <TableColumnRow>{val.description}</TableColumnRow>  
-                                    <TableColumnRow>{val.value}</TableColumnRow>  
-                                    <TableColumnRow>{val.month}</TableColumnRow>
-                                </TableEvenRow> 
-                               )
-                        )
-                    }
-                </tbody>
-            </StyledTable>
-        </DivContainer>
+        <Container>
+            <SearchContainer>               
+                <PickList
+                    onChange = {(e) => setSearchKind(e.target.value)}
+                    options = {options}
+                />
+                <input placeholder="Search" onChange={(e) => handleSearch(e.target.value)} value={searchText}></input>
+            </SearchContainer>            
+            <ExpensesTable expenseList={filteredExpenseList}/>
+        </Container>
     )
     
 }
