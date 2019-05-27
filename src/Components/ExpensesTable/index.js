@@ -2,6 +2,7 @@ import React from 'react'
 import {ColumnHeader,ColumnBody,EvenRow, StyledTable, OddRow, ColumnBodyCentered} from './styles'
 
 export default function ExpensesTable(props) {
+    console.log(props.expenseList)
     return(
         <div>            
             <h1> Expenses </h1>
@@ -40,6 +41,16 @@ export default function ExpensesTable(props) {
                                     )
                                 }
                             </tbody>
+                            {props.expenseList.length > 0 &&
+                            (<tfoot>
+                                <tr style={{width:"100%",backgroundColor:"#ccf2ff", padding:"10px" }}>
+                                    <th colSpan="3" style={{textAlign:"left", fontSize:"25px" }}>Total</th>
+                                    <th colSpan="2" style={{textAlign:"center", fontSize:"25px"}}>
+                                        {props.expenseList.map(i => i.value).reduce((total,current) => total + current)}
+                                    </th>
+                                </tr>
+                            </tfoot>)
+                            }
                         </StyledTable>
         </div>
     )

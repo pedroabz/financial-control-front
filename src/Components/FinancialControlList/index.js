@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import axios from 'axios'
 import ExpensesTable from '../ExpensesTable'
-import PickList from '../PickList'
+import MonthPickList from '../MonthPickList'
 import {Container, SearchContainer} from './styles'
 
 
@@ -9,27 +9,30 @@ export default function FinancialControlList ()
 {  
     const [expenseList, setExpenseList] = useState([]);
     const [filteredExpenseList, setFilteredExpenseList] = useState([]);
-    const [searchText, setSearchState] = useState("")
-    const [searchKind, setSearchKind] = useState("Description")
+    const [descriptionSearch, setDescriptionSearch] = useState("")
+    const [monthSearch, setMonthSearch] = useState("")
 
     useEffect(() =>{
         getExpenses()
     }, [])
 
     useEffect(() => {
-        if(expenseList.length)
-        {
-            searchText ?             
-                ( 
-                setFilteredExpenseList(expenseList.filter(i => i.description.includes(searchText)).length ? 
-                    expenseList.filter(i => i.description.includes(searchText)) :
-                    []
-                )  
-                )
-                :
-                setFilteredExpenseList(expenseList)
-        }
-    }, [searchText, expenseList])
+        if(expenseList.length) handleFilter()  
+    }, [descriptionSearch, expenseList, monthSearch])
+
+    const handleFilter = () => {
+        let filtered = expenseList
+            .filter(i => 
+                (descriptionSearch ? i.description.toUpperCase().includes(descriptionSearch.toUpperCase()) : true ) &&
+                (monthSearch ? i.month === monthSearch : true)
+            )
+        setFilteredExpenseList(
+            filtered.length ? 
+            filtered:
+            []
+        )   
+    }
+
     const getExpenses = ()=> {
         axios.get('http://localhost:3500/expenses')
             .then((response) => {                
@@ -38,32 +41,29 @@ export default function FinancialControlList ()
     }
 
 
-    const handleSearch = (value) => {
-        setSearchState(value)        
-    }
+    const handleSearchByDescription = (value) => {
+        setDescriptionSearch(value)        
+    }    
 
-    const options = [{
-        value:"Description",
-        label:"Description"
-    },
-    {
-        value:"Value",
-        label:"Value"
-    }
-    ]
+    const handleSearchByMonth = (value) => {
+        setMonthSearch(value)        
+    }  
 
     return( 
         <Container>
-            <SearchContainer>               
-                <PickList
-                    onChange = {(e) => setSearchKind(e.target.value)}
-                    options = {options}
-                />
-                <input placeholder="Search" onChange={(e) => handleSearch(e.target.value)} value={searchText}></input>
+            <SearchContainer>  
+                <div style = {{marginRight: '10px'}}>                
+                    <input 
+                        type="search"
+                        placeholder="Search by description" 
+                        onChange={(e) => handleSearchByDescription(e.target.value)} 
+                        value={descriptionSearch}>                    
+                    </input>
+                </div>                             
+                <MonthPickList onChange={(e) => handleSearchByMonth(e.target.value)} value={monthSearch}/>
             </SearchContainer>            
             <ExpensesTable expenseList={filteredExpenseList}/>
         </Container>
-    )
-    
+    ) 
 }
     

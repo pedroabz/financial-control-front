@@ -13,7 +13,7 @@ import styled from 'styled-components'
         font-size:25px 
     `
     const OddRow = styled.tr`               
-        background-color: #ffffff     
+        background-color: #ECF3F2    
     `
 
     const EvenRow  = styled.tr`
@@ -23,9 +23,6 @@ import styled from 'styled-components'
     const StyledTable = styled.table`
         font-family: arial, sans-serif;
         width: 100%;
-        border:solid black .5px;
-        border-radius: 25px;
-        padding: 7px 7px;
     `
     const ColumnBodyCentered = styled.td`       
         text-align: center;
